@@ -1,0 +1,43 @@
+﻿# Build results
+[Bb]in/
+[Oo]bj/
+[Oo]ut/
+build/
+dist/
+
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.csproj.user
+
+# Rider
+.idea/
+
+# VS Code
+.vscode/
+
+# Environment / secrets
+.env
+.env.local
+appsettings.Development.json
+
+# Logs
+*.log
+logs/
+
+# NuGet
+*.nupkg
+*.snupkg
+packages/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Publish
+publish/
+*.pubxml
+*.pubxml.user
