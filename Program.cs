@@ -60,7 +60,8 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "http://localhost:5173",
-            "http://localhost:3000"
+            "http://localhost:3000",
+            "https://code-alpha-project-management-front-kappa.vercel.app"
         )
         .AllowAnyHeader()
         .AllowAnyMethod()
