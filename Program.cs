@@ -9,7 +9,7 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// FIX: PostgreSQL timestamp issue (DateTime Kind=UTC with timestamp without time zone)
+// FIX: PostgreSQL timestamp issue
 AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
 // 1. Database
@@ -53,15 +53,18 @@ builder.Services.AddScoped<NotificationService>();
 // 5. Controllers
 builder.Services.AddControllers();
 
-// 6. CORS
+// 6. CORS (you will add the Vercel URL after deploying the frontend)
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowFrontend", policy =>
     {
-        policy.WithOrigins("http://localhost:5173", "http://localhost:3000")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials();
+        policy.WithOrigins(
+            "http://localhost:5173",
+            "http://localhost:3000"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod()
+        .AllowCredentials();
     });
 });
 
@@ -102,6 +105,28 @@ builder.Services.AddSwaggerGen(options =>
 });
 
 var app = builder.Build();
+
+// ============================================================
+// AUTO-MIGRATE: Apply pending EF Core migrations on startup
+// ============================================================
+using (var scope = app.Services.CreateScope())
+{
+    var services = scope.ServiceProvider;
+    var logger = services.GetRequiredService<ILogger<Program>>();
+    try
+    {
+        logger.LogInformation("Applying pending database migrations...");
+        var context = services.GetRequiredService<AppDbContext>();
+        await context.Database.MigrateAsync();
+        logger.LogInformation("Database migrations applied successfully.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while applying database migrations.");
+        throw;
+    }
+}
+// ============================================================
 
 if (app.Environment.IsDevelopment())
 {
